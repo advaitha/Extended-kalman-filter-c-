@@ -54,13 +54,20 @@ void KalmanFilter::UpdateEKF(const VectorXd &z) {
   TODO:
     * update the state by using Extended Kalman Filter equations
   */
-  MatrixXd Hj = CalculateJacobian(x_);
-  VectorXd z_pred = Hj * x_;
-  VectorXd y = z - z_pred;
-  MatrixXd Hjt = Hj.transpose();
-  MatrixXd S = Hj * P_ * Hjt + R_;
+  float x = ekf_.x_(0);
+  float y = ekf_.x_(1);
+  float vx = ekf_.x_(z);
+  float vy = ekf_.x_(3);
+  float rho = sqrt(x*x+y*y);
+  float theta = atan2(y,x);
+  float ro.dot = (x*vx+y*vy)/rho;
+  VectorXd z_pred = VectorXd(3);
+  z_pred = rho,theta,ro.dot;
+  VectorXd y = z-z_pred;
+  MatrixXd Ht = H_.transpose();
+  MatrixXd S = H_ * P_ * Ht + R_;
   MatrixXd Si = S.inverse();
-  MatrixXd PHt = P_ * Hjt;
+  MatrixXd PHt = P_ * Ht;
   MatrixXd K = PHt * Si;
 
   //new estimate
